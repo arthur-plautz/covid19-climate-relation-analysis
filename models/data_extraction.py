@@ -1,6 +1,7 @@
 import requests
 import os
 import pandas as pd
+import asyncio
 from horology import timed
 
 CURRENT_DIR = os.getcwd()
@@ -21,6 +22,18 @@ def load_covid_data(uf):
     df = pd.read_csv(data_file, encoding='ISO-8859-1', sep=';', error_bad_lines=False,index_col=False)
     df['id'] = range(1, len(df) + 1)
     return df
+
+def extract_climate_data(counties, uf, time_limit=10):
+    async def extract_county_climate(county):
+        os.system(
+            f"python models/execute_crawlers.py {time_limit} '{county}' '{uf}'"
+        )
+    
+    async def extract_counties_climate():
+        for county in counties:
+            await extract_county_climate(county)
+
+    asyncio.run(extract_counties_climate())
 
 def load_counties_data(uf):
     data_file = f"{CURRENT_DIR}/data/county_list.csv"
