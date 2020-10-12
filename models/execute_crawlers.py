@@ -54,6 +54,7 @@ def clean_data(df):
 
 async def get_url(county, uf):
     os.environ['URL'] = f"{BASE_URL}/worldclock/?query={county.lower()}+{uf.lower()}+"
+    os.environ['UF'] = f"{uf.lower()}"
     os.environ['COUNTY'] = f"{county.lower()}"
     os.system(
         f"scrapy runspider ./crawlers/url_spider.py --output={TMP}/urls.json"
