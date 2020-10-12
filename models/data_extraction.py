@@ -12,12 +12,12 @@ def download_data(local_url, source_url):
     print('File Size: '+os.stat(local_url).st_size) 
 
 def extract_covid_data(source_url, uf):
-    local_url = f"{CURRENT_DIR}/data/covid_{uf['initials'].lower()}.csv"
+    local_url = f"{CURRENT_DIR}/data/covid_data/covid_{uf['initials'].lower()}.csv"
     download_data(local_url, source_url)
     return local_url
 
 def load_covid_data(uf):
-    data_file = f"{CURRENT_DIR}/data/covid_{uf['initials'].lower()}.csv"
+    data_file = f"{CURRENT_DIR}/data/covid_data/covid_{uf['initials'].lower()}.csv"
     df = pd.read_csv(data_file, encoding='ISO-8859-1', sep=';', error_bad_lines=False,index_col=False)
     df['id'] = range(1, len(df) + 1)
     return df

@@ -131,4 +131,3 @@ dmypy.json
 # Data Files
 *covid*.csv
 *climate*.csv
-*weather*.csv
