@@ -77,7 +77,7 @@ async def get_data(url, year, month, day):
 
 async def main():
     if len(sys.argv) == 4:
-        date = sys.argv[1].split()
+        date = sys.argv[1].split('/')
         county = sys.argv[2]
         uf = sys.argv[3]
         url = await get_url(county, uf)
