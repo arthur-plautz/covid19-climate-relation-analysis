@@ -77,12 +77,12 @@ async def get_data(url, year, month, day):
 
 async def main():
     if len(sys.argv) == 4:
-        date = sys.argv[1]
+        date = sys.argv[1].split()
         county = sys.argv[2]
         uf = sys.argv[3]
         url = await get_url(county, uf)
         data = []
-        for month in range(3, int(date)):
+        for month in range(int(date[0]), int(date[1])):
             month_days = monthrange(2020, month)
             for day in range(1, month_days[1]):
                 avg = await get_data(url, str(2020), str(month), str(day))
@@ -91,7 +91,12 @@ async def main():
                     data.append(avg)
         if data:
             df = pd.DataFrame(data)
-            df_file = f"{DATA}/climate_{county}.csv"
+            df_file = f"{DATA}/climate_{county.replace(' ', '_')}.csv"
+            if os.path.exists(df_file):
+                data_df = pd.read_csv(df_file)
+                data_df.append(df)
+                os.system(f"rm {df_file}")
+                df = data_df
             os.system(f"touch {df_file}")
             with open(df_file, 'w') as data_file:
                 data_file.write(df.to_csv())

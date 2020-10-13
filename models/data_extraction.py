@@ -23,10 +23,10 @@ def load_covid_data(uf):
     df['id'] = range(1, len(df) + 1)
     return df
 
-def extract_climate_data(counties, uf, time_limit=10):
+def extract_climate_data(counties, uf, time_init=3, time_limit=10):
     async def extract_county_climate(county):
         os.system(
-            f"python models/execute_crawlers.py {time_limit} '{county}' '{uf}'"
+            f"python models/execute_crawlers.py {time_init}/{time_limit} '{county}' '{uf}'"
         )
     
     async def extract_counties_climate():
@@ -34,6 +34,11 @@ def extract_climate_data(counties, uf, time_limit=10):
             await extract_county_climate(county)
 
     asyncio.run(extract_counties_climate())
+
+def load_climate_data(county):
+    data_file = f"{CURRENT_DIR}/data/climate_data/climate_{county.replace(' ', '_')}.csv"
+    df = pd.read_csv(data_file)
+    return df
 
 def load_counties_data(uf):
     data_file = f"{CURRENT_DIR}/data/county_list.csv"
