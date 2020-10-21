@@ -5,7 +5,7 @@ import datetime
 from horology import timed
 from calendar import monthrange
 from models.data_extraction import load_counties_data, load_climate_data
-from tools.formats import format_date, max_date, month_days, iterate_metrics
+from tools.formats import format_date, max_date, month_days, format_climate
 
 def iterate_query_values(df, column):
     selection = ''
@@ -66,10 +66,7 @@ def compile_cases_climate(cases_df, climate_dict):
         case_county = str(case.municipio_notificacao)
         climate_df = climate_dict[case_county]
         df = select_infection_period(climate_df, case_date)
-        means = iterate_metrics(df)
-        means['id'] = case.id
-        means['date'] = case_date
-        means['municipio'] = case_county
+        means = format_climate(df, case.id, case_date, case_county)
         cases_infection_climate.append(means)
     df = pd.DataFrame(cases_infection_climate)
     return df

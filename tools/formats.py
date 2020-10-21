@@ -8,6 +8,13 @@ def iterate_metrics(df):
         means[metric] = df[metric].mean()
     return means
 
+def format_climate(df, case_id, case_date, case_county):
+    means = iterate_metrics(df)
+    means['id'] = case_id
+    means['date'] = case_date
+    means['municipio'] = case_county
+    return means
+
 def format_date(date):
     date = str(date)
     if int(date) < 10 and len(date) != 2:
