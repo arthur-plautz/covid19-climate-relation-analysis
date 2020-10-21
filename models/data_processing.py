@@ -35,12 +35,13 @@ def select_counties(covid_df, uf):
     return covid_df.query(f"municipio_notificacao in ({selected_counties})")
 
 def select_infection_period(climate_df, start_date):
+    retroactive_period = 7
     year, month, day = start_date.split('-')
     day_int = int(day)
     month_int = int(month)
     date_list = []
     i = day_int
-    while i >= (day_int-10):
+    while i >= (day_int-retroactive_period):
         if i < 0:
             previous_month = month_days(month_int-1)
             date_list.append(f"{year}-{format_date(month_int-1)}-{format_date(previous_month+i)}")
@@ -68,6 +69,7 @@ def compile_cases_climate(cases_df, climate_dict):
         means = iterate_metrics(df)
         means['id'] = case.id
         means['date'] = case_date
-        cases_infection_climate.append()
+        means['municipio'] = case_county
+        cases_infection_climate.append(means)
     df = pd.DataFrame(cases_infection_climate)
     return df
