@@ -7,25 +7,12 @@ import re
 import asyncio
 import math
 import pandas as pd
-from calendar import monthrange
+from tools.formats import format_date, max_date, month_days
 
 TMP = './crawlers/tmp'
 DATA = './data/climate_data'
 BASE_URL = "https://www.timeanddate.com"
 
-def format_date(date):
-    if int(date) < 10 and len(date) != 2:
-        return f"0{date}"
-    else:
-        return date
-
-def max_date():
-    today = datetime.date.today()
-    if today.day < 10:
-        day = f"0{today.day}"
-    else:
-        day = today.day
-    return int(f"{today.year}{today.month}{day}")
 
 async def process_url():
     with open(f"{TMP}/urls.json", 'r') as urls_file:
@@ -83,8 +70,7 @@ async def main():
         url = await get_url(county, uf)
         data = []
         for month in range(int(date[0]), int(date[1])):
-            month_days = monthrange(2020, month)
-            for day in range(1, month_days[1]):
+            for day in range(1, month_days(month)):
                 avg = await get_data(url, str(2020), str(month), str(day))
                 if avg:
                     avg['date'] = datetime.date(2020, month, day)

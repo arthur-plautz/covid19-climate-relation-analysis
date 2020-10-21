@@ -19,7 +19,7 @@ def extract_covid_data(source_url, uf):
 
 def load_covid_data(uf):
     data_file = f"{CURRENT_DIR}/data/covid_data/covid_{uf['initials'].lower()}.csv"
-    df = pd.read_csv(data_file, encoding='ISO-8859-1', sep=';', error_bad_lines=False,index_col=False)
+    df = pd.read_csv(data_file, encoding='ISO-8859-1', sep=';', error_bad_lines=False,index_col=False, low_memory=False)
     df['id'] = range(1, len(df) + 1)
     return df
 
