@@ -4,4 +4,3 @@ scrapy
 horology
 requests
 matplotlib
-plotly
