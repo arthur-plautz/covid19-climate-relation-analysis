@@ -80,8 +80,18 @@ def series_rate(df, column):
     rate = []
     values = df[column]
     for i in range(len(values)):
-        rate.append((values[i]/values[i-1])*(values[i] - values[i-1]))
+        growth_rate = values[i]/values[i-1]
+        magnitude = (values[i] - values[i-1])/values.sum()
+        rate.append(growth_rate * magnitude * 100)
+    print(sum(rate))
     return rate
+
+def series_distribution(df, column):
+    dist = []
+    values = df[column]
+    for i in range(len(values)):
+        dist.append((values[i] - values[i-1])/values.sum())
+    return dist
 
 def series_variation(df, column):
     variation = []

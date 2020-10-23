@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from models.data_processing import time_series, series_rate
+from models.data_processing import time_series, series_rate, series_variation
 
 def covidgrowthrate_climatechanges(cases_climate, covid_cases):
     cases_climate = cases_climate.query("municipio == 'FLORIANOPOLIS'").sort_values('date')
@@ -15,16 +15,15 @@ def covidgrowthrate_climatechanges(cases_climate, covid_cases):
     ax1.plot(covid_cases_serie.index, series_rate(covid_cases_serie, "id"), color='red')
     ax1.set_ylabel('', color='red')
 
-
     ax2 = ax1.twinx()
 
-    ax2.plot(covid_cases_serie.index, covid_cases_serie.id, color='lightgray')
-    ax2.set_ylabel('', color='gray')
+    ax2.plot(covid_cases_serie.index, cases_climate_serie.AT, color='blue')
+    ax2.set_ylabel('', color='blue')
 
-    ax3 = ax1.twinx()
+    # ax3 = ax1.twinx()
 
-    ax3.plot(covid_cases_serie.index, cases_climate_serie.AT, color='purple')
-    ax3.set_ylabel('', color='purple')
+    # ax3.plot(covid_cases_serie.index, cases_climate_serie.RH, color='purple')
+    # ax3.set_ylabel('', color='purple')
 
     plt.title('')
     plt.show()
