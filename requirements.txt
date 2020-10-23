@@ -2,3 +2,6 @@ numpy
 pandas
 scrapy
 horology
+requests
+matplotlib
+plotly
