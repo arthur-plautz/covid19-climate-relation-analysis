@@ -70,3 +70,22 @@ def compile_cases_climate(cases_df, climate_dict):
         cases_infection_climate.append(means)
     df = pd.DataFrame(cases_infection_climate)
     return df
+
+def time_series(df, date_column):
+    df[date_column] = pd.to_datetime(df[date_column])
+    df = df.groupby(date_column)
+    return df
+
+def series_rate(df, column):
+    rate = []
+    values = df[column]
+    for i in range(len(values)):
+        rate.append(values[i]/values[i-1])
+    return rate
+
+def series_variation(df, column):
+    variation = []
+    values = df[column]
+    for i in range(len(values)):
+        variation.append(values[i] - values[i-1])
+    return variation
