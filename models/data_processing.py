@@ -80,7 +80,7 @@ def series_rate(df, column):
     rate = []
     values = df[column]
     for i in range(len(values)):
-        rate.append(values[i]/values[i-1])
+        rate.append((values[i]/values[i-1])*(values[i] - values[i-1]))
     return rate
 
 def series_variation(df, column):
