@@ -35,7 +35,7 @@ def select_counties(covid_df, uf):
     return covid_df.query(f"municipio_notificacao in ({selected_counties})")
 
 def select_infection_period(climate_df, start_date):
-    retroactive_period = 7
+    retroactive_period = 6
     year, month, day = start_date.split('-')
     day_int = int(day)
     month_int = int(month)
@@ -80,22 +80,77 @@ def series_rate(df, column):
     rate = []
     values = df[column]
     for i in range(len(values)):
-        growth_rate = values[i]/values[i-1]
-        magnitude = (values[i] - values[i-1])/values.sum()
-        rate.append(growth_rate * magnitude * 100)
-    print(sum(rate))
+        if values[i-1] == 0:
+            growth_rate = np.nan
+        else:
+            growth_rate = values[i]/values[i-1]
+        rate.append(growth_rate)
     return rate
 
-def series_distribution(df, column):
-    dist = []
-    values = df[column]
-    for i in range(len(values)):
-        dist.append((values[i] - values[i-1])/values.sum())
-    return dist
+def measure_function(serie, measure):
+    functions = {
+        'kurtosis': serie.kurtosis(),
+        'skew': serie.skew(),
+        'median': serie.median(),
+        'mean': serie.mean(),
+        'std': serie.std(),
+        'mode': serie.mode()
+    }
+    return functions[measure]
 
-def series_variation(df, column):
-    variation = []
-    values = df[column]
-    for i in range(len(values)):
-        variation.append(values[i] - values[i-1])
-    return variation
+def counties_group_measure(data_df, column, measure='kurtosis', county_column='municipio'):
+    measures = []
+    for county in data_df[county_column].unique():
+        df = data_df.query(f"{county_column} == '{county}'").sort_values('date')
+        x = df[column].dropna()
+        measures.append(measure_function(x, measure))
+    return measures
+
+def growth_rate_measure(covid_cases, interval='W', measure='kurtosis'):
+    measures = []
+    for county in covid_cases['municipio_notificacao'].unique():
+        df = covid_cases.query(f"municipio_notificacao == '{county}'").sort_values('data_inicio_sintomas')
+        df = time_series(df, 'data_inicio_sintomas').count().resample(interval).sum()
+        serie = pd.Series(series_rate(df, 'id'))
+        measures.append(measure_function(serie, measure))
+    return measures
+
+def single_symptoms_list(covid_cases):
+    symptoms = {}
+    for symptom in covid_cases.sintomas.dropna().unique():
+        symptoms_combined = symptom.replace(' ','').split(',')
+        for single_symptom in symptoms_combined:
+            if single_symptom not in symptoms.keys():
+                symptoms[single_symptom] = 0
+    return symptoms
+
+def cases_symptoms_count(covid_cases):
+    symptoms = single_symptoms_list(covid_cases)
+    for case in covid_cases.to_records():
+        case_symptoms = case['sintomas']
+        if str(case_symptoms) != 'nan':
+            for symptom in case_symptoms.replace(' ','').split(','):
+                symptoms[symptom] += 1
+    return pd.DataFrame([{'sintoma': key, 'casos': value} for (key, value) in symptoms.items()])
+
+
+def cases_age_count(covid_cases):
+    ages = {'Abaixo dos 10': 0, 'De 10 a 18': 0, 'De 18 a 25': 0, 'De 25 a 35': 0, 'De 35 a 50': 0, 'De 50 a 70': 0, 'Acima dos 70': 0}
+    for case in covid_cases.to_records():
+        case_age = case['idade']
+        if str(case_age) != 'nan':
+            if case_age < 10:
+                ages['Abaixo dos 10'] += 1
+            elif case_age < 18:
+                ages['De 10 a 18'] += 1
+            elif case_age < 25:
+                ages['De 18 a 25'] += 1
+            elif case_age < 35:
+                ages['De 25 a 35'] += 1
+            elif case_age < 50:
+                ages['De 35 a 50'] += 1
+            elif case_age < 70:
+                ages['De 50 a 70'] += 1
+            else:
+                ages['Acima dos 70'] += 1
+    return pd.DataFrame([{'idade': key, 'casos': value} for (key, value) in ages.items()])
