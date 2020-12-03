@@ -32,12 +32,12 @@ async def process_data(date):
             pass
 
 def clean_data(df):
-    props = ['AT', 'W', 'RH', 'P', 'V']
-    mean = {}
+    props = ['AT', 'W', 'RH', 'P']
+    clean = {}
     for prop in props:
         df[prop] = [int(re.sub('[^0-9]','', value)) for value in df[prop]]
-        mean[prop] = df[prop].mean()
-    return mean
+        clean[prop] = df[prop].mean()
+    return clean
 
 async def get_url(county, uf):
     os.environ['URL'] = f"{BASE_URL}/worldclock/?query={county.lower()}+{uf.lower()}+"
@@ -74,6 +74,7 @@ async def main():
                 avg = await get_data(url, str(2020), str(month), str(day))
                 if avg:
                     avg['date'] = datetime.date(2020, month, day)
+                    print(avg)
                     data.append(avg)
         if data:
             df = pd.DataFrame(data)

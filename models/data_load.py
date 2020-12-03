@@ -22,6 +22,14 @@ def basic_processing(uf):
     cases_climate = compile_cases_climate(cases_sample, climate_data)
     load_processed(cases_climate, 'cases_climate')
 
+def county_processing(county, uf):
+    uf_data = load_uf_data(uf)
+    covid_data = load_covid_data(uf_data)
+    cases_sample = covid_data.query(f"municipio == '{county.upper()}'")
+    load_processed(cases_sample, f'{county}_covid_cases')
+    cases_climate = load_climate_data(county)
+    load_processed(cases_climate, f'{county}_cases_climate')
+
 def read_processed(name):
     local_url = f"{CURRENT_DIR}/data/processed_data/processed_{name}.csv"
     return pd.read_csv(local_url)
