@@ -36,7 +36,7 @@ def select_counties(covid_df, uf):
     return covid_df.query(f"{MUNICIPIO} in ({selected_counties})")
 
 def select_infection_period(climate_df, start_date):
-    retroactive_period = 6
+    retroactive_period = 10
     year, month, day = start_date.split('-')
     day_int = int(day)
     month_int = int(month)
@@ -60,14 +60,12 @@ def climate_data_dict(counties):
     return climate_dict
 
 @timed
-def compile_cases_climate(cases_df, climate_dict):
+def compile_cases_climate(cases_df, climate_df, county=''):
     cases_infection_climate = []
     for case in cases_df.to_records():
         case_date = case[INICIO_SINTOMAS].split(' ')[0]
-        case_county = str(case[MUNICIPIO])
-        climate_df = climate_dict[case_county]
         df = select_infection_period(climate_df, case_date)
-        means = format_climate(df, case.id, case_date, case_county)
+        means = format_climate(df, case.id, case_date, county)
         cases_infection_climate.append(means)
     df = pd.DataFrame(cases_infection_climate)
     return df
@@ -77,8 +75,8 @@ def time_series(df, date_column):
     df = df.groupby(date_column)
     return df
 
-def rolling_mean(df):
-    pass
+def rolling_mean(df, window, column=INICIO_SINTOMAS):
+    return time_series(df, column).sum().rolling(window).mean()
 
 def series_rate(df, column):
     rate = []

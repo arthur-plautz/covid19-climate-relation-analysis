@@ -2,7 +2,7 @@ import datetime
 from calendar import monthrange
 
 def iterate_metrics(df):
-    metrics = ['AT', 'W', 'RH']
+    metrics = ['AT', 'W', 'RH', 'P']
     means = {}
     for metric in metrics:
         means[metric] = df[metric].mean()

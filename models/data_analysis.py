@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-from models.data_processing import time_series, series_rate, counties_group_measure, growth_rate_measure, cases_symptoms_count, cases_age_count
+from models.data_processing import *
 from models.data_columns import *
 
 def rolling_meanXresample(covid_cases, interval, window):
@@ -66,7 +66,7 @@ def growth_rateXclimate_changes(cases_climate, covid_cases, interval, county=Non
     plt.title(f'Growth Rate X Temperature X Relative Humidity ({county})')
     plt.show()
 
-def casesXclimate(cases_climate, county=None):
+def casesXclimate_boxplot(cases_climate, county=None):
     if county:
         cases_climate = cases_climate.query(f"municipio == '{county}'")
     fig, ax1 = plt.subplots(figsize=(5,12))
@@ -78,6 +78,11 @@ def casesXclimate(cases_climate, county=None):
     ax2.set_ylabel('Relative Humidity')
     plt.title(f'Cases Infection Week Conditions ({county})')
     plt.show()
+
+def casesXclimate_hist(cases_climate, column):
+    plt.hist(cases_climate[column], bins=20)
+    plt.show()
+
 
 def climateXcases_age(covid_cases, cases_climate):
     pass
