@@ -32,7 +32,7 @@ async def process_data(date):
             pass
 
 def clean_data(df):
-    props = ['AT', 'W', 'RH']
+    props = ['AT', 'W', 'RH', 'P', 'V']
     mean = {}
     for prop in props:
         df[prop] = [int(re.sub('[^0-9]','', value)) for value in df[prop]]
