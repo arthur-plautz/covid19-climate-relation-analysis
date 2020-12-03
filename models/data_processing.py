@@ -77,6 +77,9 @@ def time_series(df, date_column):
     df = df.groupby(date_column)
     return df
 
+def rolling_mean(df):
+    pass
+
 def series_rate(df, column):
     rate = []
     values = df[column]

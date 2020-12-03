@@ -3,6 +3,23 @@ import pandas as pd
 from models.data_processing import time_series, series_rate, counties_group_measure, growth_rate_measure, cases_symptoms_count, cases_age_count
 from models.data_columns import *
 
+def rolling_meanXresample(covid_cases, interval, window):
+    covid_cases_resample = time_series(covid_cases, INICIO_SINTOMAS).sum().resample(interval).sum()
+    covid_cases_rolling_mean = time_series(covid_cases, INICIO_SINTOMAS).sum().rolling(window).mean()
+
+    fig, ax1 = plt.subplots(figsize=(12,5))
+
+    ax1.set_xlabel('date')
+    ax1.plot(covid_cases_rolling_mean.index, covid_cases_rolling_mean.id, color='grey')
+    ax1.set_ylabel('Rolling Mean', color='gray')
+
+    ax2 = ax1.twinx()
+    ax2.plot(covid_cases_resample.index, covid_cases_resample.id, color='black')
+    ax2.set_ylabel('Resample', color='black')
+
+    plt.title(f'Rolling Mean Method X Resample Method')
+    plt.show()
+
 def growth_rateXcases(covid_cases, interval, county=None):
     if county:
         covid_cases = covid_cases.query(f"municipio == '{county}'")
