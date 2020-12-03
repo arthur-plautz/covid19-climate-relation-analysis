@@ -83,6 +83,9 @@ def cases_hist(covid_cases):
     plt.hist(covid_cases['id'], bins=len(covid_cases.index))
     plt.show()
 
+def cases_hist(covid_cases):
+    plt.hist(np.log(covid_cases['id']), bins=len(covid_cases.index))
+    plt.show()
 
 def climateXcases_age(covid_cases, cases_climate):
     pass
