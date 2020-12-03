@@ -79,8 +79,8 @@ def casesXclimate_boxplot(cases_climate, county=None):
     plt.title(f'Cases Infection Week Conditions ({county})')
     plt.show()
 
-def casesXclimate_hist(cases_climate, column):
-    plt.hist(cases_climate[column], bins=20)
+def cases_hist(covid_cases):
+    plt.hist(covid_cases['id'], bins=len(covid_cases.index))
     plt.show()
 
 

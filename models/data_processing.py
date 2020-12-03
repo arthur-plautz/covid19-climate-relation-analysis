@@ -63,10 +63,12 @@ def climate_data_dict(counties):
 def compile_cases_climate(cases_df, climate_df, county=''):
     cases_infection_climate = []
     for case in cases_df.to_records():
-        case_date = case[INICIO_SINTOMAS].split(' ')[0]
-        df = select_infection_period(climate_df, case_date)
-        means = format_climate(df, case.id, case_date, county)
-        cases_infection_climate.append(means)
+        if not isinstance(case[INICIO_SINTOMAS], float):
+            print(case[INICIO_SINTOMAS])
+            case_date = str(case[INICIO_SINTOMAS]).split(' ')[0]
+            df = select_infection_period(climate_df, case_date)
+            means = format_climate(df, case.id, case_date, county)
+            cases_infection_climate.append(means)
     df = pd.DataFrame(cases_infection_climate)
     return df
 
