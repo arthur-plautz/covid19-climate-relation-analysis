@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 from models.data_processing import time_series, series_rate, counties_group_measure, growth_rate_measure, cases_symptoms_count, cases_age_count
+from models.data_columns import *
+
 def growth_rateXcases(covid_cases, interval, county=None):
     if county:
         covid_cases = covid_cases.query(f"municipio == '{county}'")
-    covid_cases_serie = time_series(covid_cases, 'data_inicio_sintomas').sum().resample(interval).sum()
+    covid_cases_serie = time_series(covid_cases, INICIO_SINTOMAS).sum().resample(interval).sum()
 
     fig, ax1 = plt.subplots(figsize=(12,5))
 
@@ -26,7 +28,7 @@ def growth_rateXclimate_changes(cases_climate, covid_cases, interval, county=Non
     cases_climate = cases_climate.sort_values('date')
     cases_climate_serie = time_series(cases_climate, 'date').mean().resample(interval).mean()
 
-    covid_cases_serie = time_series(covid_cases, 'data_inicio_sintomas').sum().resample(interval).sum()
+    covid_cases_serie = time_series(covid_cases, INICIO_SINTOMAS).sum().resample(interval).sum()
 
     fig, ax1 = plt.subplots(figsize=(12,5))
 

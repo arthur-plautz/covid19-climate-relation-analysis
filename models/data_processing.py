@@ -6,6 +6,7 @@ from horology import timed
 from calendar import monthrange
 from models.data_extraction import load_counties_data, load_climate_data
 from models.tools.formats import format_date, max_date, month_days, format_climate
+from models.data_columns import *
 
 def iterate_query_values(df, column):
     selection = ''
@@ -26,13 +27,13 @@ def remove_values(df, column, target=[]):
     return df[df[column].notna()]
     
 def select_counties(covid_df, uf):
-    cases_county = covid_df.groupby('municipio_notificacao', as_index=False).count()
+    cases_county = covid_df.groupby(MUNICIPIO, as_index=False).count()
     mean_cases_county = cases_county.id.sum()/len(cases_county.id.unique())
     print(f"UF Mean: {math.floor(mean_cases_county)}")
     cases_county = cases_county.query(f"id > {mean_cases_county}")
     print(f"Counties: {len(cases_county)}")
-    selected_counties = iterate_query_values(cases_county, 'municipio_notificacao')
-    return covid_df.query(f"municipio_notificacao in ({selected_counties})")
+    selected_counties = iterate_query_values(cases_county, MUNICIPIO)
+    return covid_df.query(f"{MUNICIPIO} in ({selected_counties})")
 
 def select_infection_period(climate_df, start_date):
     retroactive_period = 6
@@ -62,8 +63,8 @@ def climate_data_dict(counties):
 def compile_cases_climate(cases_df, climate_dict):
     cases_infection_climate = []
     for case in cases_df.to_records():
-        case_date = case.data_inicio_sintomas.split(' ')[0]
-        case_county = str(case.municipio_notificacao)
+        case_date = case[INICIO_SINTOMAS].split(' ')[0]
+        case_county = str(case[MUNICIPIO])
         climate_df = climate_dict[case_county]
         df = select_infection_period(climate_df, case_date)
         means = format_climate(df, case.id, case_date, case_county)
@@ -108,16 +109,16 @@ def counties_group_measure(data_df, column, measure='kurtosis', county_column='m
 
 def growth_rate_measure(covid_cases, interval='W', measure='kurtosis'):
     measures = []
-    for county in covid_cases['municipio_notificacao'].unique():
-        df = covid_cases.query(f"municipio_notificacao == '{county}'").sort_values('data_inicio_sintomas')
-        df = time_series(df, 'data_inicio_sintomas').count().resample(interval).sum()
+    for county in covid_cases[MUNICIPIO].unique():
+        df = covid_cases.query(f"{MUNICIPIO} == '{county}'").sort_values(INICIO_SINTOMAS)
+        df = time_series(df, INICIO_SINTOMAS).count().resample(interval).sum()
         serie = pd.Series(series_rate(df, 'id'))
         measures.append(measure_function(serie, measure))
     return measures
 
 def single_symptoms_list(covid_cases):
     symptoms = {}
-    for symptom in covid_cases.sintomas.dropna().unique():
+    for symptom in covid_cases[SINTOMAS].dropna().unique():
         symptoms_combined = symptom.replace(' ','').split(',')
         for single_symptom in symptoms_combined:
             if single_symptom not in symptoms.keys():
@@ -127,7 +128,7 @@ def single_symptoms_list(covid_cases):
 def cases_symptoms_count(covid_cases):
     symptoms = single_symptoms_list(covid_cases)
     for case in covid_cases.to_records():
-        case_symptoms = case['sintomas']
+        case_symptoms = case[SINTOMAS]
         if str(case_symptoms) != 'nan':
             for symptom in case_symptoms.replace(' ','').split(','):
                 symptoms[symptom] += 1
@@ -137,7 +138,7 @@ def cases_symptoms_count(covid_cases):
 def cases_age_count(covid_cases):
     ages = {'Abaixo dos 10': 0, 'De 10 a 18': 0, 'De 18 a 25': 0, 'De 25 a 35': 0, 'De 35 a 50': 0, 'De 50 a 70': 0, 'Acima dos 70': 0}
     for case in covid_cases.to_records():
-        case_age = case['idade']
+        case_age = case[IDADE]
         if str(case_age) != 'nan':
             if case_age < 10:
                 ages['Abaixo dos 10'] += 1
