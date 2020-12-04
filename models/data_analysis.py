@@ -3,6 +3,18 @@ import pandas as pd
 from models.data_processing import *
 from models.data_columns import *
 
+
+def all_climate_scatters(covid_cases, cases_climate):
+    for attr in ['AT', 'RH', 'W', 'P']:
+        rolling_meanXclimate_scatter(covid_cases, cases_climate, attr)
+
+def rolling_meanXclimate_scatter(covid_cases, cases_climate, column):
+    plt.scatter(covid_cases['id'], cases_climate[column])
+    plt.ylabel(f'{column} (Retroactive Mean)')
+    plt.xlabel('Covid Cases (Rolling Mean)')
+    plt.show()
+
+
 def rolling_meanXresample(covid_cases, interval, window):
     covid_cases_resample = time_series(covid_cases, INICIO_SINTOMAS).sum().resample(interval).sum()
     covid_cases_rolling_mean = time_series(covid_cases, INICIO_SINTOMAS).sum().rolling(window).mean()
@@ -80,15 +92,17 @@ def casesXclimate_boxplot(cases_climate, county=None):
     plt.show()
 
 def cases_hist(covid_cases):
-    plt.hist(covid_cases['id'], bins=len(covid_cases.index))
+    plt.hist(covid_cases, bins=10)
+    plt.xlabel('Covid Cases (Rolling Mean)')
+    plt.ylabel('Frequency')
     plt.show()
 
-def cases_hist(covid_cases):
-    plt.hist(np.log(covid_cases['id']), bins=len(covid_cases.index))
+def cases_hist_log(covid_cases):
+    plt.hist(np.log(covid_cases), bins=10)
+    plt.xlabel('Covid Cases (Rolling Mean transformed by ln)')
+    plt.ylabel('Frequency')
     plt.show()
 
-def climateXcases_age(covid_cases, cases_climate):
-    pass
 
 def cases_age_analysis(covid_cases):
     ages = cases_age_count(covid_cases)

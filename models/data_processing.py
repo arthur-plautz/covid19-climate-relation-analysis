@@ -77,7 +77,7 @@ def time_series(df, date_column):
     return df
 
 def rolling_mean(df, window, column=INICIO_SINTOMAS):
-    return time_series(df, column).sum().rolling(window).mean()
+    return time_series(df, column).count().rolling(window).mean()
 
 def series_rate(df, column):
     rate = []
@@ -89,6 +89,18 @@ def series_rate(df, column):
             growth_rate = values[i]/values[i-1]
         rate.append(growth_rate)
     return rate
+
+def all_measures(serie):
+    measures = [
+        'kurtosis',
+        'skew',
+        'median',
+        'mean',
+        'std',
+        'mode'
+    ]
+    for measure in measures:
+        print(measure+':\n', measure_function(serie, measure))
 
 def measure_function(serie, measure):
     functions = {
