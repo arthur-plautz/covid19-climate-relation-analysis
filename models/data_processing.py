@@ -38,16 +38,16 @@ def select_counties(covid_df, uf):
 def select_infection_period(climate_df, start_date):
     retroactive_period = 10
     year, month, day = start_date.split('-')
-    day_int = int(day)
+    day_int = int(str(day).split('T')[0])
     month_int = int(month)
     date_list = []
     i = day_int
     while i >= (day_int-retroactive_period):
         if i < 0:
             previous_month = month_days(month_int-1)
-            date_list.append(f"{year}-{format_date(month_int-1)}-{format_date(previous_month+i)}")
+            date_list.append(f"{year}-{format_date(month_int-1)}-{format_date(previous_month+i+1)}")
         else:
-            date_list.append(f"{year}-{format_date(month_int)}-{format_date(i)}")
+            date_list.append(f"{year}-{format_date(month_int)}-{format_date(i+1)}")
         i -= 1
     infection_period_df = climate_df.loc[climate_df['date'].isin(date_list)]
     return infection_period_df
@@ -64,10 +64,11 @@ def compile_cases_climate(cases_df, climate_df, county=''):
     cases_infection_climate = []
     for case in cases_df.to_records():
         if not isinstance(case[INICIO_SINTOMAS], float):
-            case_date = str(case[INICIO_SINTOMAS]).split(' ')[0]
-            df = select_infection_period(climate_df, case_date)
-            means = format_climate(df, case.id, case_date, county)
-            cases_infection_climate.append(means)
+            case_date = str(case[INICIO_SINTOMAS]).split(' ')[0].split('T')[0]
+            if int(case_date[5:7]) > 2:
+                df = select_infection_period(climate_df, case_date)
+                means = format_climate(df, case.id, case_date, county)
+                cases_infection_climate.append(means)
     df = pd.DataFrame(cases_infection_climate)
     return df
 

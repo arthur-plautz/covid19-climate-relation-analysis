@@ -11,7 +11,7 @@ def iterate_metrics(df):
 def format_climate(df, case_id, case_date, case_county):
     means = iterate_metrics(df)
     means['id'] = case_id
-    means['date'] = case_date
+    means['date'] = str(case_date).split('T')[0]
     means['municipio'] = case_county
     return means
 
