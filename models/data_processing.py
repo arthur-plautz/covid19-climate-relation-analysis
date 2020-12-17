@@ -7,6 +7,8 @@ from calendar import monthrange
 from models.data_extraction import load_counties_data, load_climate_data
 from models.tools.formats import format_date, max_date, month_days, format_climate
 from models.data_columns import *
+from sklearn.model_selection import train_test_split
+from scipy import stats
 
 def iterate_query_values(df, column):
     selection = ''
@@ -170,3 +172,12 @@ def cases_age_count(covid_cases):
             else:
                 ages['Acima dos 70'] += 1
     return pd.DataFrame([{'idade': key, 'casos': value} for (key, value) in ages.items()])
+
+def transform_boxcox(df):
+    train,test = train_test_split(df)
+
+    train_data, fitted_lambda = stats.boxcox(train)
+    print(fitted_lambda)
+    test_data = stats.boxcox(test, fitted_lambda)
+
+    return test_data

@@ -2,18 +2,26 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from models.data_processing import *
 from models.data_columns import *
-
+from sklearn.linear_model import LinearRegression
 
 def all_climate_scatters(covid_cases, cases_climate):
     for attr in ['AT', 'RH', 'W', 'P']:
         rolling_meanXclimate_scatter(covid_cases, cases_climate, attr)
 
 def rolling_meanXclimate_scatter(covid_cases, cases_climate, column):
-    plt.scatter(covid_cases['id'], cases_climate[column])
-    plt.ylabel(f'{column} (Retroactive Mean)')
-    plt.xlabel('Covid Cases (Rolling Mean)')
+    plt.scatter(cases_climate[column], covid_cases['id'])
+    plt.xlabel(f'{column} (Retroactive Mean)')
+    plt.ylabel('Covid Cases (Rolling Mean)')
     plt.show()
 
+def linear_regression_rolling_meanXclimate_scatter(covid_cases, cases_climate, column):
+    regr = LinearRegression()
+    regr.fit(np.array(cases_climate[column]).reshape(-1, 1), covid_cases['id'])
+    plt.scatter(np.array(cases_climate[column]).reshape(-1, 1), covid_cases['id'])
+    plt.plot(np.array(cases_climate[column]).reshape(-1, 1), regr.predict(np.array(cases_climate[column]).reshape(-1, 1)), color='red')
+    plt.xlabel(f'{column} (Retroactive Mean)')
+    plt.ylabel('Covid Cases (Rolling Mean)')
+    plt.show()
 
 def rolling_meanXresample(covid_cases, interval, window):
     covid_cases_resample = time_series(covid_cases, INICIO_SINTOMAS).sum().resample(interval).sum()
