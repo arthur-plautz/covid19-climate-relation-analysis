@@ -10,7 +10,7 @@ CURRENT_DIR = os.getcwd()
 @timed
 def load_processed(df, name):
     local_url = f"{CURRENT_DIR}/data/processed_data/processed_{name}.csv"
-    df.to_csv(local_url)
+    df.to_csv(local_url, index=False)
 
 def basic_processing(uf):
     uf_data = load_uf_data(uf)

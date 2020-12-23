@@ -4,8 +4,8 @@ import math
 import datetime
 from horology import timed
 from calendar import monthrange
-from models.data_extraction import load_counties_data, load_climate_data
-from models.tools.formats import format_date, max_date, month_days, format_climate
+from models.data_extraction import *
+from models.tools.formats import *
 from models.data_columns import *
 
 def iterate_query_values(df, column):
@@ -170,3 +170,17 @@ def cases_age_count(covid_cases):
             else:
                 ages['Acima dos 70'] += 1
     return pd.DataFrame([{'idade': key, 'casos': value} for (key, value) in ages.items()])
+
+def process_union(covid_cases, cases_climate):
+    covid_cases = covid_cases.dropna(subset=[INICIO_SINTOMAS])
+    cases_climate = cases_climate.dropna(subset=['date'])
+
+    covid_cases = rolling_mean(covid_cases, 7)
+    cases_climate = time_series(cases_climate, 'date').mean()
+
+    union = pd.DataFrame()
+    for attr in ['AT', 'RH', 'W', 'P']:
+        union[attr] = cases_climate[attr]
+
+    union['cases'] = covid_cases['id']
+    return union
