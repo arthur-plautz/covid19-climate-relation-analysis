@@ -8,3 +8,5 @@ cases_climate = read_processed(f'florianopolis_cases_climate_retroactive')
 
 df = process_union(covid_cases, cases_climate)
 print(df)
+
+df.to_csv('florianopolis_data.csv')

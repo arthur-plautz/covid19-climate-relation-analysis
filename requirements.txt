@@ -4,3 +4,5 @@ scrapy
 horology
 requests
 matplotlib
+sklearn
+scipy
