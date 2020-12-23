@@ -1,7 +1,7 @@
 from models.data_load import *
 from models.data_analysis import *
 from models.data_columns import *
-import scipy.stats as s
+from models.data_processing import *
 
 covid_cases = read_processed(f'florianopolis_covid_cases')
 cases_climate = read_processed(f'florianopolis_cases_climate_retroactive')
